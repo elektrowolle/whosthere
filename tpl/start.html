@@ -12,62 +12,32 @@
 <body>
 <h1>{$title}</h1>
 <p>{$_welcome}</p>
-<h2>{$_arrivals}</h2>
-<table>
-<tr>
-	<td class="arrival descriptor">{$_arrivals_time}</td>
-	<td class="name descriptor">{$_arrivals_name}</td>
-	<td class="status descriptor">{$_arrivals_status}</td>
-</tr>
-{loop="$today_arrivals"}
-<tr>
-	<td class="arrival">{$value.time|stDate:'H:i'}</td>
-	<td class="name">{$value.name}</td>
-	<td class="status">{$value.status}</td>
-</tr>
-{/loop}
-</table>
+<h2>{$_todays_arrivals}</h2>
+<div id="todays_arrivals_list">
+{"today_arrivals"|setTplMessage}
+{include="arrivalList"}
+</div>
 
 <h2>{$_former_arrivals}</h2>
-<table>
-<tr>
-	<td class="arrival descriptor">{$_arrivals_time}</td>
-	<td class="name descriptor">{$_arrivals_name}</td>
-	<td class="status descriptor">{$_arrivals_status}</td>
-</tr>
-
-{loop="$former_arrivals"}
-<tr>
-	<td class="arrival">{$value.time|stDate:'H:i'}</td>
-	<td class="name">{$value.name}</td>
-	<td class="status">{$value.status}</td>
-</tr>
-{/loop}
-</table>
-
-{if="!isCheckedIn()"}
-<div id="formContainer">
-<h2>{$_check_in}</h2>
-	<form id="announceForm" action="socket.php?mode=announce" method="post">
-		<fieldset>
-			<input name="name" type="text" value="{$user_name}" required autofocus>
-			<input name="announce" type="submit" value="I'd love to come">
-		</fieldset>
-	</form>
+<div id="former_arrivals_list">
+{"former_arrivals"|setTplMessage}
+{include="arrivalList"}
 </div>
+
+<div id="statusContainer">
+{if="!isCheckedIn()"}
+{include="checkInForm"}
 {/if}
 
 {if="isCheckedIn()"}
-<div id="formContainer">
-<h2>{$_check_in}</h2>
-	<form id="announceForm" action="socket.php?mode=announce" method="post">
-		<fieldset>
-			<input name="name" type="text" value="{$user_name}" required autofocus>
-			<input name="announce" type="submit" value="I'd love to come">
-		</fieldset>
-	</form>
-</div>
+
 {/if}
+
+{if="isArrived()"}
+
+{/if}
+</div>
+
 
 <script type="text/javascript">
 
@@ -90,7 +60,15 @@
 {/if}
 	var posting;
 	function update () {
-		// body...
+		var $todaysList = $("#todays_arrivals_list");
+		$.ajax("arrivalsListUpdate.php").done(function(data) {
+		    $todaysList.html(data);
+		 })
+
+		var $formerList = $("#former_arrivals_list");
+		$.ajax("arrivalsListUpdate.php?filter=former").done(function(data) {
+		    $formerList.html(data);
+		 })
 	}
 
 	var $nameFied = $( "#announceForm" ).find( "input[name='name']" );
@@ -99,7 +77,6 @@
 		if ($nameFied.val() == "{$_name_request}") {
 			$nameFied.val("");
 		}
-
 	});
 
 	$nameFied.focusout(function( event ) {
@@ -123,7 +100,8 @@
 	 
 	  // Put the results in a div
 	  posting.done(function( data ) {
-	    $( "#formContainer" ).empty().append( 'we are waiting for you!' );
+	    $( "#formContainer" ).html(data);
+	    update();
 	  });
 	});	
 

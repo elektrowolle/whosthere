@@ -12,62 +12,32 @@
 <body>
 <h1><?php echo $title;?></h1>
 <p><?php echo $_welcome;?></p>
-<h2><?php echo $_arrivals;?></h2>
-<table>
-<tr>
-	<td class="arrival descriptor"><?php echo $_arrivals_time;?></td>
-	<td class="name descriptor"><?php echo $_arrivals_name;?></td>
-	<td class="status descriptor"><?php echo $_arrivals_status;?></td>
-</tr>
-<?php $counter1=-1; if( isset($today_arrivals) && is_array($today_arrivals) && sizeof($today_arrivals) ) foreach( $today_arrivals as $key1 => $value1 ){ $counter1++; ?>
-<tr>
-	<td class="arrival"><?php echo ( stDate( $value1["time"], 'H:i' ) );?></td>
-	<td class="name"><?php echo $value1["name"];?></td>
-	<td class="status"><?php echo $value1["status"];?></td>
-</tr>
-<?php } ?>
-</table>
+<h2><?php echo $_todays_arrivals;?></h2>
+<div id="todays_arrivals_list">
+<?php echo setTplMessage( "today_arrivals" );?>
+<?php $tpl = new RainTPL;$tpl->assign( $this->var );$tpl->draw( "arrivalList" );?>
+</div>
 
 <h2><?php echo $_former_arrivals;?></h2>
-<table>
-<tr>
-	<td class="arrival descriptor"><?php echo $_arrivals_time;?></td>
-	<td class="name descriptor"><?php echo $_arrivals_name;?></td>
-	<td class="status descriptor"><?php echo $_arrivals_status;?></td>
-</tr>
-
-<?php $counter1=-1; if( isset($former_arrivals) && is_array($former_arrivals) && sizeof($former_arrivals) ) foreach( $former_arrivals as $key1 => $value1 ){ $counter1++; ?>
-<tr>
-	<td class="arrival"><?php echo ( stDate( $value1["time"], 'H:i' ) );?></td>
-	<td class="name"><?php echo $value1["name"];?></td>
-	<td class="status"><?php echo $value1["status"];?></td>
-</tr>
-<?php } ?>
-</table>
-
-<?php if( !isCheckedIn() ){ ?>
-<div id="formContainer">
-<h2><?php echo $_check_in;?></h2>
-	<form id="announceForm" action="socket.php?mode=announce" method="post">
-		<fieldset>
-			<input name="name" type="text" value="<?php echo $user_name;?>" required autofocus>
-			<input name="announce" type="submit" value="I'd love to come">
-		</fieldset>
-	</form>
+<div id="former_arrivals_list">
+<?php echo setTplMessage( "former_arrivals" );?>
+<?php $tpl = new RainTPL;$tpl->assign( $this->var );$tpl->draw( "arrivalList" );?>
 </div>
+
+<div id="statusContainer">
+<?php if( !isCheckedIn() ){ ?>
+<?php $tpl = new RainTPL;$tpl->assign( $this->var );$tpl->draw( "checkInForm" );?>
 <?php } ?>
 
 <?php if( isCheckedIn() ){ ?>
-<div id="formContainer">
-<h2><?php echo $_check_in;?></h2>
-	<form id="announceForm" action="socket.php?mode=announce" method="post">
-		<fieldset>
-			<input name="name" type="text" value="<?php echo $user_name;?>" required autofocus>
-			<input name="announce" type="submit" value="I'd love to come">
-		</fieldset>
-	</form>
-</div>
+
 <?php } ?>
+
+<?php if( isArrived() ){ ?>
+
+<?php } ?>
+</div>
+
 
 <script type="text/javascript">
 
@@ -90,7 +60,15 @@
 <?php } ?>
 	var posting;
 	function update () {
-		// body...
+		var $todaysList = $("#todays_arrivals_list");
+		$.ajax("arrivalsListUpdate.php").done(function(data) {
+		    $todaysList.html(data);
+		 })
+
+		var $formerList = $("#former_arrivals_list");
+		$.ajax("arrivalsListUpdate.php?filter=former").done(function(data) {
+		    $formerList.html(data);
+		 })
 	}
 
 	var $nameFied = $( "#announceForm" ).find( "input[name='name']" );
@@ -99,7 +77,6 @@
 		if ($nameFied.val() == "<?php echo $_name_request;?>") {
 			$nameFied.val("");
 		}
-
 	});
 
 	$nameFied.focusout(function( event ) {
@@ -123,7 +100,8 @@
 	 
 	  // Put the results in a div
 	  posting.done(function( data ) {
-	    $( "#formContainer" ).empty().append( 'we are waiting for you!' );
+	    $( "#formContainer" ).html(data);
+	    update();
 	  });
 	});	
 

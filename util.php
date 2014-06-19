@@ -1,4 +1,6 @@
 <?php
+	
+	$tplMessage = "";
 
 	function initLang($languageArray, $language) {
 
@@ -27,6 +29,10 @@
 
 	function stDate($time, $format) {
 		return date($format, $time);
+	}
+
+	function setTplMessage($str){
+		$GLOBALS['tplMessage'] = $str;
 	}
 
 ?>

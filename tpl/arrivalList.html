@@ -1,0 +1,14 @@
+<table id="arrivalsList">
+<tr>
+	<td class="arrival descriptor">{$_arrivals_time}</td>
+	<td class="name descriptor">{$_arrivals_name}</td>
+	<td class="status descriptor">{$_arrivals_status}</td>
+</tr>
+{loop="$$GLOBALS.tplMessage"}
+<tr>
+	<td class="arrival">{$value.time|stDate:'H:i'}</td>
+	<td class="name">{$value.name}</td>
+	<td class="status">{$value.status}</td>
+</tr>
+{/loop}
+</table>
