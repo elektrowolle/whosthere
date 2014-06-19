@@ -1,0 +1,7 @@
+[submodule "raintpl"]
+      path = libs/raintpl
+      url = git://github.com/rainphp/raintpl.git
+
+[submodule "notorm"]
+      path = libs/notorm
+      url = git://github.com/vrana/notorm.git
