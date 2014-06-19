@@ -20,7 +20,7 @@
 	function announce()
 	{
 		$db   = $GLOBALS['db'];
-		$log  = $db->visitorLog();
+		$log  = $db->{'\'whosthere.sqlite.visitorLog\''}();
 		$name = $_POST['name'];
 		
 		$data = array(

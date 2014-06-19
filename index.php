@@ -1,19 +1,28 @@
 <?php
 	include "conf.php";
 	
-	$today        = new DateTime();
-	$historicDate = new DateTime();
+	$today           = new DateTime();
+	$historicDate    = new DateTime();
+	$today_arrivals  = null;
+	$former_arrivals = null;
 	
 	$today->setTime(0,0,0);
 	$historicDate->sub($config['historic_arrivals_interval']);
 
-	$today_arrivals  = $db
-		->visitorLog();
-		//->where('time > ' . $today->getTimestamp());
+	$todayArrivalQuery = $db
+		->{'\'whosthere.sqlite.visitorLog\''}()
+		->where('time > ' . $today->getTimestamp());
 	
-	$former_arrivals = $db
-		->visitorLog()
+	$today_arrivals = queryToArray($todayArrivalQuery);
+
+	$formerArrivalsQuery = $db
+		->{'\'whosthere.sqlite.visitorLog\''}()
 		->where('time < ' . $today->getTimestamp() . ' AND time > ' . $historicDate->getTimestamp());
+
+	$former_arrivals = queryToArray($formerArrivalsQuery);
+
+	$tpl->assign($today_arrivals);
+	$tpl->assign($former_arrivals);
 
 	$tpl->draw('flightlist');
 ?>

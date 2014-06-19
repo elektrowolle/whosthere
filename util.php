@@ -9,6 +9,21 @@
 				$lang[$value] = $languageArray[$language][$value];
 			}
 		}
+		
 		return $lang;
 	}
+
+	function queryToArray($query)
+	{
+		$ret = null;
+		foreach ($query as $id => $value) {
+		$ret[] = array(
+			'name'   => $value['name'],
+			'time'   => $value['time'],
+			'status' => $value['status']);
+		}
+		
+		return $ret;
+	}
+
 ?>

@@ -18,7 +18,7 @@
 	<div class="name descriptor">{$_arrivals_name}</div>
 	<div class="status descriptor">{$_arrivals_status}</div>
 </div>	
-{loop="today_arrivals"}
+{loop="$today_arrivals"}
 <div class="block">
 	<div class="arrival">{$value.time}</div>
 	<div class="name">{$value.name}</div>
@@ -44,7 +44,7 @@
 	<div class="status descriptor">{$_arrivals_status}</div>
 </div>
 
-{loop="former_arrivals"}
+{loop="$former_arrivals"}
 <div class="block">
 	<div class="arrival">{$value.time}</div>
 	<div class="name">{$value.name}</div>
@@ -72,8 +72,7 @@
 	 
 	  // Put the results in a div
 	  posting.done(function( data ) {
-	    var content = $( data ).find( "#formContainer" );
-	    $( "#formContainer" ).empty().append( content );
+	    $( "#formContainer" ).empty().append( 'we are waiting for you!' );
 	  });
 	});	
 

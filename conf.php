@@ -14,6 +14,8 @@
 
 	include_once $libDirectory . 'notorm/NotORM.php';
 	$pdo = new PDO($config['db_name']);
+	$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
+	$pdo->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
 	$db  = new NotORM($pdo);
 
 	//////LANG _DE

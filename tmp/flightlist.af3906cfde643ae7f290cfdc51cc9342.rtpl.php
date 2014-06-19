@@ -72,8 +72,7 @@
 	 
 	  // Put the results in a div
 	  posting.done(function( data ) {
-	    var content = $( data ).find( "#formContainer" );
-	    $( "#formContainer" ).empty().append( content );
+	    $( "#formContainer" ).empty().append( 'we are waiting for you!' );
 	  });
 	});	
 
