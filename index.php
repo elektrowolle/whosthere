@@ -7,10 +7,9 @@
 	$today->setTime(0,0,0);
 	$historicDate->sub($config['historic_arrivals_interval']);
 
-
 	$today_arrivals  = $db
-		->visitorLog()
-		->where('time > ' . $today->getTimestamp());
+		->visitorLog();
+		//->where('time > ' . $today->getTimestamp());
 	
 	$former_arrivals = $db
 		->visitorLog()

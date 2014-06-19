@@ -7,7 +7,8 @@
 		  'CREATE TABLE IF NOT EXISTS "whosthere.sqlite.visitorLog" ( '
 		. 'id INTEGER PRIMARY KEY AUTOINCREMENT, '
 		. 'name TEXT NOT NULL, '
-		. 'time INTEGER NOT NULL) ';
+		. 'time INTEGER NOT NULL, '
+		. 'status BOOLEAN NOT NULL)';
 
 		print($query);
 		$pdo->exec($query) or die(print_r($pdo->errorInfo(), true)); ;

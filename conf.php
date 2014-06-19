@@ -26,4 +26,7 @@
 	//////Different Stuff
 	$config['historic_arrivals']          = 3;    //in days
 	$config['historic_arrivals_interval'] = new DateInterval('P' . $config['historic_arrivals'] . 'D');
+	
+	$config['socket_address'] = 'socket.php';
+	$tpl->assign('socket_address', $config['socket_address']);
 ?>
