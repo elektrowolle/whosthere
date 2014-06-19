@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>{$title}</title>
+	<link href="style.css" type="text/css" rel="stylesheet" >
+	<script src="http://cdn.sockjs.org/sockjs-0.3.min.js"></script>
+</head>
+<body>
+<h1>{$title}</h1>
+<p>{$_welcome}</p>
+<h2>{$_arrivals}</h2>
+<div class="block">
+	<div class="arrival descriptor">{$_arrivals_time}</div>
+	<div class="name descriptor">{$_arrivals_name}</div>
+	<div class="status descriptor">{$_arrivals_status}</div>
+</div>	
+{loop="today_arrivals"}
+<div class="block">
+	<div class="arrival">{$value.time}</div>
+	<div class="name">{$value.name}</div>
+	<div class="status">{$value.status}</div>
+</div>
+{/loop}	
+
+<h2>{$_former_arrivals}</h2>
+<div class="block">
+	<div class="arrival descriptor">{$_arrivals_time}</div>
+	<div class="name descriptor">{$_arrivals_name}</div>
+	<div class="status descriptor">{$_arrivals_status}</div>
+</div>
+
+{loop="former_arrivals"}
+<div class="block">
+	<div class="arrival">{$value.time}</div>
+	<div class="name">{$value.name}</div>
+	<div class="status">{$value.status}</div>
+</div>
+{/loop}
+
+<h2>{$_check_in}</h2>
+
+<script type="text/javascript">
+	
+</script>
+</body>
+</html>

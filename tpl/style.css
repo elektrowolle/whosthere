@@ -1,0 +1,36 @@
+body{
+	font-family: sans-serif;
+	background: #000;
+	color: #eef;
+}
+
+.descriptor{
+	background-color: #115;
+	color: #ffc;
+	font-variant: small-caps;
+}
+
+.arrival, .name, .status{
+	position: relative;
+}
+.arrival {
+	left:  20px;
+	width: 80px;
+	top:    0px;
+}
+.name{
+	left:  120px;
+	width:  80px;
+	top:     0px;
+}
+
+.status{
+	left:  220px;
+	width:  80px;
+	top:     0px;
+}
+
+
+.block{
+	width: 300px;
+}
