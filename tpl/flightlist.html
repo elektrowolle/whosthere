@@ -13,49 +13,100 @@
 <h1>{$title}</h1>
 <p>{$_welcome}</p>
 <h2>{$_arrivals}</h2>
-<div class="block">
-	<div class="arrival descriptor">{$_arrivals_time}</div>
-	<div class="name descriptor">{$_arrivals_name}</div>
-	<div class="status descriptor">{$_arrivals_status}</div>
-</div>	
+<table>
+<tr>
+	<td class="arrival descriptor">{$_arrivals_time}</td>
+	<td class="name descriptor">{$_arrivals_name}</td>
+	<td class="status descriptor">{$_arrivals_status}</td>
+</tr>
 {loop="$today_arrivals"}
-<div class="block">
-	<div class="arrival">{$value.time}</div>
-	<div class="name">{$value.name}</div>
-	<div class="status">{$value.status}</div>
-</div>
-{/loop}	
+<tr>
+	<td class="arrival">{$value.time|stDate:'H:i'}</td>
+	<td class="name">{$value.name}</td>
+	<td class="status">{$value.status}</td>
+</tr>
+{/loop}
+</table>
 
+<h2>{$_former_arrivals}</h2>
+<table>
+<tr>
+	<td class="arrival descriptor">{$_arrivals_time}</td>
+	<td class="name descriptor">{$_arrivals_name}</td>
+	<td class="status descriptor">{$_arrivals_status}</td>
+</tr>
+
+{loop="$former_arrivals"}
+<tr>
+	<td class="arrival">{$value.time|stDate:'H:i'}</td>
+	<td class="name">{$value.name}</td>
+	<td class="status">{$value.status}</td>
+</tr>
+{/loop}
+</table>
+
+{if="!isCheckedIn()"}
 <div id="formContainer">
 <h2>{$_check_in}</h2>
 	<form id="announceForm" action="socket.php?mode=announce" method="post">
 		<fieldset>
-			<legend>Who are you?</legend>
-			<input name="name" type="text" required autofocus>
+			<input name="name" type="text" value="{$user_name}" required autofocus>
 			<input name="announce" type="submit" value="I'd love to come">
 		</fieldset>
 	</form>
 </div>
+{/if}
 
-<h2>{$_former_arrivals}</h2>
-<div class="block">
-	<div class="arrival descriptor">{$_arrivals_time}</div>
-	<div class="name descriptor">{$_arrivals_name}</div>
-	<div class="status descriptor">{$_arrivals_status}</div>
+{if="isCheckedIn()"}
+<div id="formContainer">
+<h2>{$_check_in}</h2>
+	<form id="announceForm" action="socket.php?mode=announce" method="post">
+		<fieldset>
+			<input name="name" type="text" value="{$user_name}" required autofocus>
+			<input name="announce" type="submit" value="I'd love to come">
+		</fieldset>
+	</form>
 </div>
-
-{loop="$former_arrivals"}
-<div class="block">
-	<div class="arrival">{$value.time}</div>
-	<div class="name">{$value.name}</div>
-	<div class="status">{$value.status}</div>
-</div>
-{/loop}
+{/if}
 
 <script type="text/javascript">
+
+	var user_position = "{$default_position}";
+
+{if="locationIsNeeded()"}
+	if(navigator.geolocation){
+		navigator.geolocation.getCurrentPosition(successCallback,errorCallback,{timeout:10000});
+
+		function successCallback (position) {
+			user_position = 
+				position.coords.latitude 
+				+ "," 
+				+ position.coords.longitude ;
+		}
+
+		function errorCallback () {
+		}
+	}
+{/if}
+	var posting;
 	function update () {
 		// body...
 	}
+
+	var $nameFied = $( "#announceForm" ).find( "input[name='name']" );
+
+	$nameFied.focusin(function( event ) {
+		if ($nameFied.val() == "{$_name_request}") {
+			$nameFied.val("");
+		}
+
+	});
+
+	$nameFied.focusout(function( event ) {
+		if ($nameFied.val() == "") {
+			$nameFied.val("{$_name_request}");
+		}
+	});
 
 	$( "#announceForm" ).submit(function( event ) {
  
@@ -68,7 +119,7 @@
 	    url  = $form.attr( "action" );
 	 
 	  // Send the data using post
-	  var posting = $.post( url, { name: name } );
+	  posting = $.post( url, { name: name, location: user_position } );
 	 
 	  // Put the results in a div
 	  posting.done(function( data ) {

@@ -1,6 +1,7 @@
 [submodule "raintpl"]
-      path = libs/raintpl
-      url = git://github.com/rainphp/raintpl.git
+      path   = libs/raintpl
+      url    = git://github.com/rainphp/raintpl.git
+      branch = v.2.7.2
 
 [submodule "notorm"]
       path = libs/notorm

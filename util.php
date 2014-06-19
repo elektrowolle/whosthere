@@ -1,6 +1,6 @@
 <?php
 
-	function initLang($languageArray, $language){
+	function initLang($languageArray, $language) {
 
 		$lang[$language] = $languageArray['default'];
 
@@ -9,12 +9,11 @@
 				$lang[$value] = $languageArray[$language][$value];
 			}
 		}
-		
+
 		return $lang;
 	}
 
-	function queryToArray($query)
-	{
+	function queryToArray($query) {
 		$ret = null;
 		foreach ($query as $id => $value) {
 		$ret[] = array(
@@ -24,6 +23,10 @@
 		}
 		
 		return $ret;
+	}
+
+	function stDate($time, $format) {
+		return date($format, $time);
 	}
 
 ?>

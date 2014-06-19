@@ -7,7 +7,8 @@
 		'_arrivals_time'   => 'Apx. arrival',
 		'_arrivals_name'   => 'Student',
 		'_arrivals_status' => 'Status',
-		'_check_in'        => 'Check in');
+		'_check_in'        => 'Check in',
+		'_name_request'    => 'Who are you?');
 
 	$config['lang']['de']['_welcome'] = 'Willkommen';
 ?>

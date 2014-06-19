@@ -23,8 +23,8 @@
 	$config['default_language'] = 'de';
 	include_once 'lang.php';
 
-	$lang = initLang($config['lang'], $config['default_language']);
-	$tpl->assign($lang['de']);
+	$lang = initLang($config['lang'], $config['default_language'])[$config['default_language']];
+	$tpl->assign($lang);
 
 	//////Different Stuff
 	$config['historic_arrivals']          = 3;    //in days
@@ -32,4 +32,12 @@
 	
 	$config['socket_address'] = 'socket.php';
 	$tpl->assign('socket_address', $config['socket_address']);
+
+	$config['default_position'] = "53.074435,8.808602";
+	$config['default_duration'] = 52380;
+
+	$tpl->assign('default_position', $config['default_position']);
+
+	$__debug = 1;
+	$__att   = $__debug;
 ?>
