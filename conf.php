@@ -1,4 +1,5 @@
 <?php
+	date_default_timezone_set("Europe/Berlin");
 	include_once "util.php";
 	//////INDEPENDENCIES
 	$libDirectory = 'libs/';
