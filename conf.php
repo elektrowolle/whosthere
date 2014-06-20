@@ -14,16 +14,22 @@ $tpl = new rainTPL();
 $config['db_name'] = 'sqlite:whosthere.sqlite'; 
 
 include_once $libDirectory . 'notorm/NotORM.php';
-$pdo = new PDO($config['db_name']);
-$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
-$pdo->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
-$db  = new NotORM($pdo);
+try {
+	$pdo = new PDO($config['db_name']);
+	$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
+	$pdo->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
+	$db  = new NotORM($pdo);
+} catch (Exception $e) {
+	die("No database");
+}
+
 
 //////LANG _DE
 $config['default_language'] = 'de';
 include_once 'lang.php';
 
-$lang = initLang($config['lang'], $config['default_language'])[$config['default_language']];
+$langs = initLang($config['lang'], $config['default_language']);
+$lang  = $langs[$config['default_language']];
 $tpl->assign($lang);
 
 //////Different Stuff

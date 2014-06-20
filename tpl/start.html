@@ -2,9 +2,17 @@
 <html>
 <head>
 	<title>{$title}</title>
+<<<<<<< HEAD
 	
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+=======
+
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.2/jquery.mobile.min.css" />	
+	<link href="style.css" type="text/css" rel="stylesheet" >
+>>>>>>> 9955e2d2b62ae7eaf49db30699ffec95718ec6ad
 	<script src="http://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.2/jquery.mobile.min.js"></script>
 	<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.2/jquery.mobile.min.css" />
 	<link href="style.css" type="text/css" rel="stylesheet">
@@ -73,6 +81,7 @@
 	var posting;
 	function update () {
 		var $todaysList = $("#todays_arrivals_list");
+<<<<<<< HEAD
 		var $formerList = $("#former_arrivals_list");
 		var args = "";
 
@@ -81,6 +90,14 @@
 		 })
 		args = JSON.stringify({"filter": "former"});
 		$.ajax("api.php?get=arrivals&args=" + args).done(function(data) {
+=======
+		$.ajax("arrivalsListUpdate.php55").done(function(data) {
+		    $todaysList.html(data);
+		 })
+
+		var $formerList = $("#former_arrivals_list");
+		$.ajax("arrivalsListUpdate.php55?filter=former").done(function(data) {
+>>>>>>> 9955e2d2b62ae7eaf49db30699ffec95718ec6ad
 		    $formerList.html(data);
 		    
 		 })
