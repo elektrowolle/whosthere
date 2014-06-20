@@ -2,10 +2,11 @@
 <html>
 <head>
 	<title>{$title}</title>
-	<link href="style.css" type="text/css" rel="stylesheet" >
+
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-	<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.2/jquery.mobile.min.css" />
+	<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.2/jquery.mobile.min.css" />	
+	<link href="style.css" type="text/css" rel="stylesheet" >
 	<script src="http://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.2/jquery.mobile.min.js"></script>
 </head>
 
@@ -61,12 +62,12 @@
 	var posting;
 	function update () {
 		var $todaysList = $("#todays_arrivals_list");
-		$.ajax("arrivalsListUpdate.php").done(function(data) {
+		$.ajax("arrivalsListUpdate.php55").done(function(data) {
 		    $todaysList.html(data);
 		 })
 
 		var $formerList = $("#former_arrivals_list");
-		$.ajax("arrivalsListUpdate.php?filter=former").done(function(data) {
+		$.ajax("arrivalsListUpdate.php55?filter=former").done(function(data) {
 		    $formerList.html(data);
 		 })
 	}
