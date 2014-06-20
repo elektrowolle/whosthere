@@ -13,16 +13,20 @@ $today->setTime(0,0,0);
 $historicDate->sub($config['historic_arrivals_interval']);
 
 //USER DATA
-function isCheckedIn(){
+function isCheckedIn() {
 	return !empty($_COOKIE['lastCheckin']) && $_COOKIE['lastCheckin'] > $today;
 }
 
-function locationIsNeeded(){
+function locationIsNeeded() {
 	return !isCheckedIn();
 }
 
-function isArrived(){
-	
+function isArrived() {
+
+}
+
+function isKioskMode() {
+	return !empty($_GET['kioskMode']) && $_GET['kioskMode'] == 'true';
 }
 
 $tpl->assign(
@@ -38,7 +42,7 @@ $todayArrivalQuery = $db
 
 $today_arrivals = queryToArray($todayArrivalQuery);
 
-$tpl->assign('today_arrivals',  $today_arrivals);
+
 
 $formerArrivalsQuery = $db
 	->{'\'whosthere.sqlite.visitorLog\''}()
@@ -46,7 +50,9 @@ $formerArrivalsQuery = $db
 
 $former_arrivals = queryToArray($formerArrivalsQuery);
 
+$tpl->assign('today_arrivals' , $today_arrivals);
 $tpl->assign('former_arrivals', $former_arrivals);
+$tpl->assign('initial_time'   , time());
 
 $tpl->draw('start');
 ?>

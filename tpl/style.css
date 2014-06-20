@@ -2,35 +2,40 @@ body{
 	font-family: 'Open Sans Condensed', sans-serif;
 	background: #111;
 	color: #eff;
+	-webkit-text-size-adjust:none;
 }
 
-.descriptor{
-	background-color: #115;
-	color: #ffc;
+.arrivalsList{
+	width: 100%;
+}
+
+
+#page{
+	max-width: 480px;
+	text-align:left;
+}
+
+thead{
+	color: #000;
 	font-variant: small-caps;
+	background-color: #ffe;
 }
 
 .arrival, .name, .status{
-	position: relative;
+
 }
 .arrival {
-	left:  20px;
-	width: 80px;
-	top:    0px;
+
 }
 .name{
-	left:  120px;
-	width:  80px;
-	top:     0px;
+
 }
 
-.status{
-	left:  220px;
-	width:  80px;
-	top:     0px;
+#statusContainer{
+
 }
 
 
 .block{
-	width: 300px;
+
 }
