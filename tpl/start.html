@@ -2,21 +2,20 @@
 <html>
 <head>
 	<title>{$title}</title>
-<<<<<<< HEAD
 	
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-=======
-
-	<link href='http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-	<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.2/jquery.mobile.min.css" />	
-	<link href="style.css" type="text/css" rel="stylesheet" >
->>>>>>> 9955e2d2b62ae7eaf49db30699ffec95718ec6ad
 	<script src="http://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.2/jquery.mobile.min.js"></script>
 	<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.2/jquery.mobile.min.css" />
 	<link href="style.css" type="text/css" rel="stylesheet">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<meta name="mobile-web-app-capable" content="yes">
+
+{if="isKioskMode()"}
+	<script src="js/ipUtils.js"></script>
+{/if}
 </head>
 
 <body>
@@ -34,13 +33,10 @@
 	{include="arrivalList"}
 	</div>
 
-	<h2>{$_former_arrivals}</h2>
-	<div id="former_arrivals_list">
-	{"former_arrivals"|setTplMessage}
-	{include="arrivalList"}
-	</div>
 
-	<div id="statusContainer" data-role="footer">
+	<div id="statusContainer">
+{if="!isKioskMode()"}
+	
 	{if="!isCheckedIn()"}
 	{include="checkInForm"}
 	{/if}
@@ -52,6 +48,19 @@
 	{if="isArrived()"}
 
 	{/if}
+{/if}
+{if="isKioskMode()"}
+	<h2>Install the app or Check in!</h2>
+	<span id="appCheckInUrl">{$app_checkin_url|goo_gl}</span>
+	<img src="https://api.qrserver.com/v1/create-qr-code/?color=000000&bgcolor=FFFFFF&data={$app_checkin_url|urlencode}&qzone=1&margin=0&size=400x400&ecc=L" alt="" title="" />
+{/if}
+
+	</div>
+
+	<h2>{$_former_arrivals}</h2>
+	<div id="former_arrivals_list">
+	{"former_arrivals"|setTplMessage}
+	{include="arrivalList"}
 	</div>
 </div>
 
@@ -59,9 +68,11 @@
 
 	var user_position = "{$default_position}";
 	var last_Update   = "{$initial_time}";
-	{if="isKioskMode()"}
+	var api_adrress   = "{$api_address}";
+
+{if="isKioskMode()"}
 	var ipShown = false;
-	{/if}
+{/if}
 
 {if="locationIsNeeded()"}
 	if(navigator.geolocation){
@@ -78,121 +89,52 @@
 		}
 	}
 {/if}
+
 	var posting;
 	function update () {
-		var $todaysList = $("#todays_arrivals_list");
-<<<<<<< HEAD
-		var $formerList = $("#former_arrivals_list");
-		var args = "";
-
-		$.getJSON("api.php?get=arrivals").done(function(data) {
-		    $todaysList.html(data);
-		 })
-		args = JSON.stringify({"filter": "former"});
-		$.ajax("api.php?get=arrivals&args=" + args).done(function(data) {
-=======
-		$.ajax("arrivalsListUpdate.php55").done(function(data) {
-		    $todaysList.html(data);
-		 })
-
-		var $formerList = $("#former_arrivals_list");
-		$.ajax("arrivalsListUpdate.php55?filter=former").done(function(data) {
->>>>>>> 9955e2d2b62ae7eaf49db30699ffec95718ec6ad
-		    $formerList.html(data);
-		    
-		 })
-
-		{if="isKioskMode()"}
-		$.getJSON("api.php?get=kiosk&args=showIP&output=json", function(data){
-			ipShown = displayIP(data.enabled == "true", ipShown);
-		});
+		console.debug("Start update");
 		
+		
+		getNewArrivals();
+		getFormerArrivals();
+		
+		{if="isKioskMode()"}
+		$.getJSON(api_adrress + "?get=kiosk&args=showIP&output=json", function(data){
+			ipShown = displayIP(data.enabled == "true", ipShown);
+			console.debug("Kiosk Infos updated");
+		});
 		{/if}
 
-	}
-{if="isKioskMode()"}
-	
-	function displayIP(showIP, shown){
-		if(showIP && !shown) {
-			getGlobalIP(function(globalIP, args){
-				getLocalIP(function(localIP, args){
-					$('#kioskInfo').html('global: ' + globalIP + 'local: ' + localIP );
-				});
-			});
-
-			shown = true;
-
-		}else if (showIP == false && shown) {
-			shown = false;
-			$('#kioskInfo').html("");
-		}
-		return shown;
+		console.debug("Display updated");
 	}
 
-	function getGlobalIP (successF, args) {
-		$.getJSON("http://jsonip.appspot.com?callback=?",
-			function(data){
-				if(successF != null){
-		        	successF(data.ip, args);
-		        }
-			});
+	function getNewArrivals () {
+		var $todaysList = $("#todays_arrivals_list");
+		var requestAddress = api_adrress + "?get=arrivals";
+		console.debug("Ask: " + requestAddress);
+
+		$.ajax(api_adrress + "?get=arrivals")
+			.done(function(data) {
+			    $todaysList.html(data);
+			    console.debug("Got new arrivals");
+		})
 	}
 
-	function getLocalIP (successF, args) {
-		var RTCPeerConnection = /*window.RTCPeerConnection ||*/ window.webkitRTCPeerConnection || window.mozRTCPeerConnection;
-		var localIP = '';
-		// NOTE: window.RTCPeerConnection is "not a constructor" in FF22/23
+	function getFormerArrivals () {
+		var $formerList = $("#former_arrivals_list");
+		var args    = JSON.stringify({"filter": "former"});
+		var requestAddress = api_adrress + "?get=arrivals&args=" + args;
 		
-
-		if (RTCPeerConnection) (function () {
-		    var rtc = new RTCPeerConnection({iceServers:[]});
-		    if (window.mozRTCPeerConnection) {      // FF needs a channel/stream to proceed
-		        rtc.createDataChannel('', {reliable:false});
-		    };
-		    
-		    rtc.onicecandidate = function (evt) {
-		        if (evt.candidate) grepSDP(evt.candidate.candidate);
-		    };
-		    rtc.createOffer(function (offerDesc) {
-		        grepSDP(offerDesc.sdp);
-		        rtc.setLocalDescription(offerDesc);
-		    }, function (e) { console.warn("offer failed", e); });
-		    
-		    
-		    var addrs = Object.create(null);
-		    addrs["0.0.0.0"] = false;
-		    function updateDisplay(newAddr) {
-		        if (newAddr in addrs) return;
-		        else addrs[newAddr] = true;
-		        var displayAddrs = Object.keys(addrs).filter(function (k) { return addrs[k]; });
-		        localIP = localIP + displayAddrs.join(" or perhaps ") || "n/a";
-		        if(successF != null){
-		        	successF(localIP, args);
-		        }
-		    }
-		    
-		    function grepSDP(sdp) {
-		        var hosts = [];
-		        sdp.split('\r\n').forEach(function (line) { // c.f. http://tools.ietf.org/html/rfc4566#page-39
-		            if (~line.indexOf("a=candidate")) {     // http://tools.ietf.org/html/rfc4566#section-5.13
-		                var parts = line.split(' '),        // http://tools.ietf.org/html/rfc5245#section-15.1
-		                    addr = parts[4],
-		                    type = parts[7];
-		                if (type === 'host') updateDisplay(addr);
-		            } else if (~line.indexOf("c=")) {       // http://tools.ietf.org/html/rfc4566#section-5.7
-		                var parts = line.split(' '),
-		                    addr = parts[2];
-		                updateDisplay(addr);
-		            }
-		        });
-		    }
-		})(); else {
-		   localIP = localIP + "<code>ifconfig | grep inet | grep -v inet6 | cut -d\" \" -f2 | tail -n1</code>";
-		   localIP = localIP + "In Chrome and Firefox your IP should display automatically, by the power of WebRTCskull.";
-		}
-
+		console.debug("Ask: " + requestAddress);
+		$.ajax(requestAddress)
+			.done(function(data) {
+			    $formerList.html(data);
+			    console.debug("Got former arrivals");
+		 });
 	}
-{/if}
+
+	////// Announcement
+	
 	var $nameFied = $( "#announceForm" ).find( "input[name='name']" );
 
 	$nameFied.focusin(function( event ) {
@@ -208,7 +150,7 @@
 	});
 
 	$( "#announceForm" ).submit(function( event ) {
- 
+ 	  console.debug("Transmit Name");
 	  // Stop form from submitting normally
 	  event.preventDefault();
 	 
@@ -222,19 +164,24 @@
 	 
 	  // Put the results in a div
 	  posting.done(function( data ) {
-	    $( "#formContainer" ).html(data);
+	    $( "#statusContainer" ).html(data);
 	    update();
 	  });
 	});	
 
 	function gup( name ){
 		name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
-		var regexS = "[\\?&]"+name+"=([^&#]*)";
-		var regex = new RegExp( regexS );
+		
+		var regexS  = "[\\?&]"+name+"=([^&#]*)";
+		var regex   = new RegExp( regexS );
 		var results = regex.exec( window.location.href ); 
-		if( results == null )    return "";
-		else    return results[1];
+		
+		if( results == null ) 
+			return "";
+		else 
+			return results[1];
 	}
+
 
 	setInterval(update, 5000);
 </script>

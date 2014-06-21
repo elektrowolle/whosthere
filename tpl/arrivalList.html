@@ -11,7 +11,17 @@
 		<tr>
 			<td class="arrival">{$value.time|stDate:'H:i'}</td>
 			<td class="name">{$value.name}</td>
-			<td class="status">{$value.status}</td>
+			<td class="status">
+				{if="$value.status == 0"}
+					{if="$value.time < time()"}
+					delay
+					{else}
+					on flight
+					{/if}
+				{else}
+					arrived
+				{/if}
+			</td>
 		</tr>
 	{/loop}
 	</tbody>
