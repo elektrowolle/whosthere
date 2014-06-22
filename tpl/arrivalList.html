@@ -8,7 +8,7 @@
 	</thead>
 	<tbody>
 	{loop="$$GLOBALS.tplMessage"}
-		<tr>
+		<tr id="arrival{$key}">
 			<td class="arrival">{$value.time|stDate:'H:i'}</td>
 			<td class="name">{$value.name}</td>
 			<td class="status">

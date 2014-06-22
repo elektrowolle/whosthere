@@ -32,6 +32,8 @@ $config['historic_arrivals_interval'] = new DateInterval('P' . $config['historic
 
 $config['googleApiKey'] = '';
 
+$config['debug'] = true;
+
 $config['default_position'] = "53.074435,8.808602";
 $config['default_duration'] = 52380;
 $config['destination']      = '8+Am+Speicher+XI+Bremen';

@@ -12,28 +12,26 @@ if ($_GET['mode'] = "resetCookie") {
 $today->setTime(0,0,0);
 $historicDate->sub($config['historic_arrivals_interval']);
 
+print_r($_COOKIE);
+
 //USER DATA
 function isCheckedIn() {
-	return !empty($_COOKIE['lastCheckin']) && $_COOKIE['lastCheckin'] > $today;
+	return !empty($_COOKIE['lastCheckedIn']) && $_COOKIE['lastCheckedIn'] > $today;
+}
+
+function isArrived() {
+	return !empty($_COOKIE['isArrived']) && $_COOKIE['isArrived'];
 }
 
 function locationIsNeeded() {
 	return !isCheckedIn();
 }
 
-function isArrived() {
-
-}
-
 function isKioskMode() {
 	return !empty($_GET['kioskMode']) && $_GET['kioskMode'] == 'true';
 }
 
-$tpl->assign(
-	'user_name',
-	!empty($_COOKIE['name']) 
-		? $_COOKIE['name']
-		: $lang['_name_request']);
+$tpl->assign('user_name', !empty($_COOKIE['name']) ? $_COOKIE['name'] : $lang['_name_request']);
 
 //Arrivals
 $todayArrivalQuery = $db

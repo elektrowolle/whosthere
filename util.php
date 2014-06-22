@@ -20,7 +20,7 @@
 	function queryToArray($query) {
 		$ret = null;
 		foreach ($query as $id => $value) {
-		$ret[] = array(
+		$ret[$id] = array(
 			'name'   => $value['name'],
 			'time'   => $value['time'],
 			'status' => $value['status']);

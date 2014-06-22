@@ -23,7 +23,7 @@
 <div data-role="page" id="page">
 	
 	<h1>{$title}</h1>
-	<p>{$_welcome}</p>
+	<p>{$_welcome_message}</p>
 	{if="isKioskMode()"}
 	<div id="kioskInfo"></div>
 	{/if}
@@ -62,7 +62,12 @@
 	{"former_arrivals"|setTplMessage}
 	{include="arrivalList"}
 	</div>
+	<div>
+		<span>at <a href="https://github.com/elektrowolle/whosthere">Github</a></span>
+	</div>
 </div>
+
+
 
 <script type="text/javascript">
 
@@ -108,65 +113,88 @@
 		console.debug("Display updated");
 	}
 
+	function apiRequest (api, request, args, successF) {
+		var requestAddress = api_adrress 
+			+ "?requestedApi=" + api
+			+ (request == "" ? "" : "&request=" + request)
+			+ (args    == "" ? "" : "&args="    + args);
+		
+		console.debug("Ask: " + requestAddress);
+		
+		$.ajax(requestAddress).done(function(data){successF(data)});
+	}
+
 	function getNewArrivals () {
 		var $todaysList = $("#todays_arrivals_list");
-		var requestAddress = api_adrress + "?get=arrivals";
-		console.debug("Ask: " + requestAddress);
-
-		$.ajax(api_adrress + "?get=arrivals")
-			.done(function(data) {
-			    $todaysList.html(data);
-			    console.debug("Got new arrivals");
-		})
+		apiRequest("arrivals", "show", '', function(data) {
+		    $todaysList.html(data);
+		    console.debug("Got new arrivals");
+		});
 	}
 
 	function getFormerArrivals () {
 		var $formerList = $("#former_arrivals_list");
-		var args    = JSON.stringify({"filter": "former"});
-		var requestAddress = api_adrress + "?get=arrivals&args=" + args;
+		var args        = JSON.stringify({"filter": "former"});
 		
-		console.debug("Ask: " + requestAddress);
-		$.ajax(requestAddress)
-			.done(function(data) {
-			    $formerList.html(data);
-			    console.debug("Got former arrivals");
+		apiRequest("arrivals", "show", args, function(data) {
+		    $formerList.html(data);
+		    console.debug("Got former arrivals");
 		 });
 	}
 
 	////// Announcement
 	
 	var $nameFied = $( "#announceForm" ).find( "input[name='name']" );
+	var nameFiedDefault = "{$_name_request}";
 
 	$nameFied.focusin(function( event ) {
-		if ($nameFied.val() == "{$_name_request}") {
+		if ($nameFied.val() == nameFiedDefault) {
 			$nameFied.val("");
 		}
 	});
 
 	$nameFied.focusout(function( event ) {
 		if ($nameFied.val() == "") {
-			$nameFied.val("{$_name_request}");
+			$nameFied.val(nameFiedDefault);
 		}
 	});
 
 	$( "#announceForm" ).submit(function( event ) {
- 	  console.debug("Transmit Name");
-	  // Stop form from submitting normally
-	  event.preventDefault();
+	 	console.debug("Transmit Name");
+		  // Stop form from submitting normally
+		event.preventDefault();
+		 
+		  // Get some values from elements on the page:
+		var $form = $( this );
+		var url   = $form.attr( "action" );
+	    var args  = {};
+
+	    args["showArrivalForm"] = "true";
+
+
+
+	    $form.find("input").each(function(index, element){
+	    	args[element.name] = element.value;
+	    });
+
+	    if(args["name"] == nameFiedDefault || args["name"] == "") {
+	    	return;
+	    };
+
+	    console.debug("announce: " + JSON.stringify(args));
 	 
-	  // Get some values from elements on the page:
-	  var $form = $( this ),
-	    name = $form.find( "input[name='name']" ).val(),
-	    url  = $form.attr( "action" );
-	 
-	  // Send the data using post
-	  posting = $.post( url, { name: name, location: user_position } );
-	 
-	  // Put the results in a div
-	  posting.done(function( data ) {
-	    $( "#statusContainer" ).html(data);
-	    update();
-	  });
+	    // Send the data using post
+		posting = $.post( url, {"args": JSON.stringify(args)} );
+		 
+		// Put the results in a div
+		posting.done(function( data ) {
+		    $form.html(data);
+		    update();
+		});
+
+		posting.fail(function( data ) {
+			console.debug("fail:" + data);
+		});
 	});	
 
 	function gup( name ){
