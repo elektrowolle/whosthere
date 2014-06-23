@@ -13,9 +13,6 @@
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 	<meta name="mobile-web-app-capable" content="yes">
 
-{if="isKioskMode()"}
-	<script src="js/ipUtils.js"></script>
-{/if}
 </head>
 
 <body>
@@ -24,9 +21,6 @@
 	
 	<h1>{$title}</h1>
 	<p>{$_welcome_message}</p>
-	{if="isKioskMode()"}
-	<div id="kioskInfo"></div>
-	{/if}
 	<h2>{$_todays_arrivals}</h2>
 	<div id="todays_arrivals_list">
 	{"today_arrivals"|setTplMessage}
@@ -35,25 +29,18 @@
 
 
 	<div id="statusContainer">
-{if="!isKioskMode()"}
 	
-	{if="!isCheckedIn()"}
+	{if="!$isCheckedIn"}
 	{include="checkInForm"}
 	{/if}
 
-	{if="isCheckedIn()"}
+	{if="$isCheckedIn"}
 
 	{/if}
 
-	{if="isArrived()"}
+	{if="$isArrived"}
 
 	{/if}
-{/if}
-{if="isKioskMode()"}
-	<h2>Install the app or Check in!</h2>
-	<span id="appCheckInUrl">{$app_checkin_url|goo_gl}</span>
-	<img src="https://api.qrserver.com/v1/create-qr-code/?color=000000&bgcolor=FFFFFF&data={$app_checkin_url|urlencode}&qzone=1&margin=0&size=400x400&ecc=L" alt="" title="" />
-{/if}
 
 	</div>
 

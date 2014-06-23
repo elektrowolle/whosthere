@@ -43,6 +43,7 @@
 				'template'   => $this->template,
 				'tplMessage' => $this->tplMessage);
 			
+
 			return $ret;
 		}
 

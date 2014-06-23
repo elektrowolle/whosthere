@@ -7,12 +7,11 @@
 	*/
 	class errorApi extends apiModule	{
 
-		function __construct($args = array('' => ''))
-		{
+		function __construct($args = array('' => '')) {
   			parent::__construct($args);
 		}
 
-		public function defaultApi($value=''){
+		public function defaultApi($value='') {
 			$this->content['error'] = $value;
 		}
 		public function getJs(){}
@@ -20,5 +19,5 @@
 
 
 
-	$api->registerAPi('errorApi', 'error');
+	API::registerAPi('errorApi', 'error');
 ?>

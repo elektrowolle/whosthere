@@ -39,9 +39,7 @@ if(!empty($_POST['request']))
 
 $api = new API($tpl, $output);
 
-include_once 'inc/inc.api._error.php';
-include_once 'inc/inc.api.arrivals.php';
-include_once 'inc/inc.api.kioks.php';
+
 
 
 

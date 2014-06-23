@@ -172,5 +172,5 @@
 
 	}
 
-	$api->registerAPi('arrivalsApi', 'arrivals');
+	API::registerAPi('arrivalsApi', 'arrivals');
 ?>

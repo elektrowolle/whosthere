@@ -32,7 +32,7 @@ $config['historic_arrivals_interval'] = new DateInterval('P' . $config['historic
 
 $config['googleApiKey'] = '';
 
-$config['debug'] = true;
+$config['debug'] = false;
 
 $config['default_position'] = "53.074435,8.808602";
 $config['default_duration'] = 52380;
@@ -42,6 +42,18 @@ $config['socket_address']     = 'socket.php';
 $config['apiAddress']         = 'api.php';
 $config['webAddress']         = 'http://whosthere.hausnr11.de/';
 $config['appCheckinUrl']      = $config['webAddress'] . '?installApp=true&arrive=true';
+
+
+//////Kiosk Stuff
+$kiosk = array();
+$kiosk['width']    = '500';
+$kiosk['rotation'] = '0';
+
+
+
+
+$config['kiosk'] = $kiosk;
+
 
 
 //$config['shortAppCheckinUrl'] = "http://goo.gl/4htls6";

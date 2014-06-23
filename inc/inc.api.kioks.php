@@ -19,7 +19,7 @@
 
 		}
 
-		public function isShowIP($value='') {
+		public function kioskUpdates($value='') {
 			$this->content['enabled'] = $this->options['showIP']['value'];
 		}
 
@@ -48,5 +48,5 @@
 		}
 	}
 
-	$api->registerApi('kioskApi', 'kiosk');
+	API::registerApi('kioskApi', 'kiosk');
 ?>

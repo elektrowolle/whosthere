@@ -1,92 +1,100 @@
 <?php
-	include_once 'inc.api._module.php';
 
+/**
+* 
+*/
 
-	/**
-	* 
-	*/
-	class API {
+include_once 'inc.api._modules.php';
 
-		var $apis;
-		var $output; 
-		var $tpl;
-		
-		function __construct($tpl = 'api', $output = 'html') {
-			$this->tpl    = $tpl;
-			$this->apis   = array();
-			$this->output = $output;
-		}
+class API {
 
-		public function askApi($requestedApi, $request, $args = '') {
-			$result = '';
-			$api;
-			if(!is_array($args)){
-				$decodedArgs = json_decode($args, true);
-				$args        = $decodedArgs != null ? $decodedArgs : $args;
-			}
-			try {
-				if (!isset($this->apis[$requestedApi])) {
-					throw new Exception("No such API: " . $requestedApi, 1);
-				}
-				$api = $this->loadApi($requestedApi);
-				$api->get($request, $args);
-			} catch (Exception $e) {
-				$api = $this->loadApi('error');
-				$api->get('', $e);
-			}
-			$result = $api->answer();
-			$this->output($result);
-		}
-
-		public function registerAPi($apiClassName='', $name='') {
-			$apiClass = new ReflectionClass($apiClassName);
-			$this->apis[($name == '') ? $apiClassName : $name] = $apiClass;
-		}
-
-		public function loadApi($api) {
-			return $this->apis[$api]->newInstance();
-		}
-
-		public function output($content)
-		{
-			switch ($this->output) {
-				case 'json':
-					$this->jsonOutput($content['content']);
-					break;
-
-				case 'html':
-				default:
-					$this->htmlOutput($content['template'], $content['content'], $content['tplMessage']);
-					break;
-			}
-		}
-
-		public function htmlOutput($emplate, $content, $tplMessage){
-			setTplMessage($tplMessage);
-
-			if(is_array($content)){
-				foreach ($content as $key => $value) {
-					$this->tpl->assign($key,  $value);
-
-				}
-			}else{
-				$this->tpl->assign('content',  $content);
-			}
-
-			$this->tpl->assign('api_values', print_r($content, true));
-			
-			$this->tpl->draw($emplate);
-		}
-
-		public function jsonOutput($content) {
-			echo json_encode($content);
-		}
-
-		public function getJs($requestedApi) {
-			$api = $this->loadApi($requestedApi);
-			$this->tpl->assign('api' . $requestedApi . 'js', $requestedApi->getJs());
-		}
+	static $apis    = array();
+	static $outputs = array();
+	var $output; 
+	var $tpl;
+	
+	function __construct($tpl = 'api', $output = 'html') {
+		$this->tpl    = $tpl;
+		$this->output = API::loadOutput($output);
 	}
+
+	public function askApi($requestedApi, $request, $args = '') {
+		$result = '';
+		$api;
+		if(!is_array($args)){
+			$decodedArgs = json_decode($args, true);
+			$args        = $decodedArgs != null ? $decodedArgs : $args;
+		}
+		try {
+			if (!isset(API::$apis[$requestedApi])) {
+				throw new Exception("No such API: " . $requestedApi, 1);
+			}
+			$api = API::loadApi($requestedApi);
+			$api->get($request, $args);
+		} catch (Exception $e) {
+			$api = $this->loadApi('error');
+			$api->get('', $e);
+		}
+		$result = $api->answer();
+		$this->output($result);
+	}
+
+	static public function registerAPi($apiClassName='', $name='') {
+		$apiClass = new ReflectionClass($apiClassName);
+		API::$apis[($name == '') ? $apiClassName : $name] = $apiClass;
+	}
+
+	static public function registerOutput($outputClassName='', $name='') {
+		$outputClass = new ReflectionClass($outputClassName);
+		API::$outputs[($name == '') ? $outputClassName : $name] = $outputClass;
+	}
+
+	static public function loadApi($api) {
+		return API::$apis[$api]->newInstance();
+	}
+
+	static public function loadOutput($output) {
+		return API::$outputs[$output]->newInstance();
+	}
+
+	public function output($content)
+	{
+		/*switch ($this->output) {
+			case 'json':
+				$this->jsonOutput($content['content']);
+				break;
+
+			case 'html':
+			default:
+				$this->htmlOutput($content['template'], $content['content'], $content['tplMessage']);
+				break;
+		}*/
+
+		$this->output->setArgument(
+			'content', 
+			$content);
+
+		$this->output->setArgument(
+			'template', 
+			$content['template']);
+
+		$this->output->setArgument(
+			'tplMessage', 
+			$content['tplMessage']);
+
+		$this->output->reply();
+	}
+
+
+	public function jsonOutput($content) {
+		echo json_encode($content);
+	}
+
+	public function getJs($requestedApi) {
+		$api = $this->loadApi($requestedApi);
+		$this->tpl->assign('api' . $requestedApi . 'js', $requestedApi->getJs());
+	}
+}
 
 
 	
