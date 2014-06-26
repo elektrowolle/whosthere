@@ -36,10 +36,14 @@ $config['default_duration']        = 52380;
 $config['destination']             = '8+Am+Speicher+XI+Bremen';
 $config['geoDifferenceForArrival'] = .1;
 
-$config['webAddress']         = 'http://whosthere.hausnr11.de/';
-$config['path']               = '/whosthere/';
-$config['apiAddress']         = $config['path'] . 'api/v0';
-$config['appCheckinUrl']      = $config['webAddress'] . $config['path'] . '?installApp=true&arrived=true';
+$config['webAddress']        = 'http://whosthere.hausnr11.de/';
+$config['path']              = '/whosthere/';
+$config['apiAddressRestful'] = $config['path'] . 'api/v0';
+$config['apiAddress']        = /*$config['apiAddressRestful']; //*/$config['path'] . 'api.php';
+
+
+$config['appCheckinUrl'] = $config['webAddress'] . $config['path'] . '?installApp=true&arrived=true';
+$config['restFulLinks']  = "true";
 
 
 //////Kiosk Stuff
@@ -71,6 +75,7 @@ $__att   = $__debug;
 
 $tpl->assign($lang);
 
+$tpl->assign('restful_links'   , $config['restFulLinks']);
 $tpl->assign('api_address'     , $config['apiAddress']);
 $tpl->assign('web_address'     , $config['webAddress']);
 $tpl->assign('app_checkin_url' , $config['appCheckinUrl']);

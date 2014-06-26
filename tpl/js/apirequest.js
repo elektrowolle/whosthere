@@ -3,10 +3,19 @@
  */
 
 function apiRequest (api, request, output, args, method) {
-	var requestAddress = api_adrress 
-		+ "/" + api
-		+ "/" + request
-		+ "." + output ;
+	var requestAddress = "";
+
+	if(restFulLinks == "true"){
+		requestAddress = api_adrress 
+			+ "/" + api
+			+ "/" + request
+			+ "." + output ;
+	}else{
+		requestAddress = api_adrress 
+			+ "?requestedApi=" + api
+			+ "&request=" + request
+			+ "&output=" + output ;
+	}
 	
 	var type =  (typeof method != "undefined") ? method : "get";
 	var args =  (typeof args != "undefined") ? args : "";
