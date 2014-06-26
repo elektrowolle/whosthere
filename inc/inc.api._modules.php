@@ -2,7 +2,7 @@
 //APIS
 include_once 'inc/inc.api._error.php';
 include_once 'inc/inc.api.arrivals.php';
-include_once 'inc/inc.api.kioks.php';
+include_once 'inc/inc.api.kiosk.php';
 
 //OUTPUT
 include_once 'inc/inc.api.out.json.php';

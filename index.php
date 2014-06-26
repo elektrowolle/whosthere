@@ -3,7 +3,7 @@ include "conf.php";
 include_once 'view/view.class.php';
 
 //RESET
-if ($_GET['mode'] = "resetCookie") {
+if (isset($_GET['mode']) && $_GET['mode'] == 'resetCookie') {
 	$_COOKIE = null;
 }
 

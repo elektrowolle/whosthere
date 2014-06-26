@@ -8,8 +8,7 @@
 		var $template;
 		var $tplMessage;
 		
-		function __construct($args = array('' => ''))
-		{
+		function __construct($args = array('' => '')) {
   			$this->content    = array();
 			$this->template   = 'api';
 			$this->tplMessage = '';
@@ -33,6 +32,18 @@
 
 			$method = (new ReflectionClass($this))->getMethod($request);
 			$method->invoke($this, $args);
+		}
+
+		public function setContent($key = '', $value='') {
+			$this->content[$key] = $value;
+		}
+
+		public function addContent($value = '') {
+			$this->content[] = $value;
+		}
+
+		public function getContent($key = '') {
+			return $this->content[$key];
 		}
 
 		abstract public function defaultApi($value);

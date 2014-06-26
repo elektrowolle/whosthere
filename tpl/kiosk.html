@@ -5,8 +5,8 @@
 	
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-	<link href="style.css" type="text/css" rel="stylesheet">
 	<script src="js/ipUtils.js"></script>
+	{include="basicHeaders"}
 	{include="kioskStyle"}
 
 </head>
@@ -14,7 +14,10 @@
 <body>
 
 <div data-role="page" id="page">
-	
+		
+	<div id="response">
+	</div>
+
 	<h1>{$title}</h1>
 	<p>{$_welcome_message}</p>
 	<div id="kioskInfo"></div>
@@ -28,8 +31,8 @@
 	<div id="statusContainer">
 
 	<h2>Install the app or Check in!</h2>
-	<span id="appCheckInUrl">{$app_checkin_url|goo_gl}</span>
-	<img src="https://api.qrserver.com/v1/create-qr-code/?color=000000&bgcolor=FFFFFF&data={$app_checkin_url|urlencode}&qzone=1&margin=0&size={$width}x{$width}&ecc=L" alt="" title="" />
+	<span id="appCheckInUrl">{$app_checkin_url|goo_gl}</span><br>
+	<img id="qrCode" src="https://api.qrserver.com/v1/create-qr-code/?color=000000&bgcolor=FFFFFF&data={$app_checkin_url|urlencode}&qzone=1&margin=0&size={$width}x{$width}&ecc=L" alt="" title="" />
 
 	</div>
 
@@ -49,7 +52,9 @@
 
 	var user_position = "{$default_position}";
 	var api_adrress   = "{$api_address}";
-	var lastUpdate    = "{time()}";
+	var lastUpdate    = "0";
+	var name          = gup("name");
+	var appCheckInUrl = "{$app_checkin_url|urlencode}";
 
 	var ipShown = false;
 
@@ -60,50 +65,82 @@
 		
 		getNewArrivals();
 		getFormerArrivals();
+		getKioskUpdates();
 		
-		apiRequest("kiosk", "kioskUpdates", {"lastUpdate":""}, function (data) {
-			kiosk(data);
-		});
 
 		console.debug("Display updated");
 	}
 
+	function getKioskUpdates (argument) {
+		var args = {
+			"name"      : name,
+			"lastUpdate": lastUpdate
+		};
+
+		apiRequest("kiosk", "kioskUpdates", "json", JSON.stringify(args))
+		.done(function (data) {
+			console.debug("got Kiosk Updates: " + data);
+			kiosk(data);
+		}).fail(function (data){
+			console.debug("failed:" + data);
+		});
+	}
+
 	function kiosk (arguments) {
-		for(var argument in arguments){
-			switch(argument.operation){
-				case 'css':
-					changeCss(argument.identifier, argument.values);
-					break;
+		var serverTime = arguments.last_update;
+		if (serverTime > lastUpdate) {
+			$.each(arguments, function(key, value){
+				console.debug("argument: " + key);
+				switch(key){
+					case "kiosk_css":
+						$.each(value, function(identifier, values){
+							changeCss(identifier, values);
+						});
+						break;
+					
+					case "showIP":
+						break;
+
+					default:
+						break;
+				}
 				
-				case 'showIP':
-					break;
-			}
+			});
 		}
+
+		lastUpdate = serverTime;
 	}
 
 	function changeCss (identifier, values) {
 		$element = $(identifier);
-
+		
 		for(var key in values){
-			values[key];
-			$element.css(key, values[key]);
-		}
-	}
+			switch(key){
+			case "rotation":
+				$element.css("webkit-transform", values[key]);
+				$element.css("moz-transform"   , values[key]);
+				$element.css("o-transform "    , values[key]);
+				$element.css("-ms-transform"   , values[key]);
+				break;
+				
+			case 'width':
+				if (identifier == "body") {
+					$("#qrCode").attr("src", "https://api.qrserver.com/v1/create-qr-code/?color=000000&bgcolor=FFFFFF&data=" + appCheckInUrl + "l&qzone=1&margin=0&size=" + values[key] + "x" + values[key] + "&ecc=L")
+				};
+				$element.css(key, values[key] + "px");
+			break;
 
-	function apiRequest (api, request, args, successF) {
-		var requestAddress = api_adrress 
-			+ "?requestedApi=" + api
-			+ (request == "" ? "" : "&request=" + request)
-			+ (args    == "" ? "" : "&args="    + args);
-		
-		console.debug("Ask: " + requestAddress);
-		
-		$.ajax(requestAddress).done(function(data){successF(data)});
+			default:
+				$element.css(key, values[key]);
+				break;
+			}
+		}
 	}
 
 	function getNewArrivals () {
 		var $todaysList = $("#todays_arrivals_list");
-		apiRequest("arrivals", "show", '', function(data) {
+		apiRequest("arrivals", "show", "html", "")
+		.done(function(data) {
 		    $todaysList.html(data);
 		    console.debug("Got new arrivals");
 		});
@@ -113,11 +150,12 @@
 		var $formerList = $("#former_arrivals_list");
 		var args        = JSON.stringify({"filter": "former"});
 		
-		apiRequest("arrivals", "show", args, function(data) {
+		apiRequest("arrivals", "show", "html", args)
+		.done(function(data) {
 		    $formerList.html(data);
 		    console.debug("Got former arrivals");
 		 });
-	}	
+	}
 
 	function gup( name ){
 		name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");

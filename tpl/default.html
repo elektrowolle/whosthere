@@ -5,19 +5,16 @@
 	
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-	<script src="http://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.2/jquery.mobile.min.js"></script>
+	<!--<script src="http://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.2/jquery.mobile.min.js"></script>
 	<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.2/jquery.mobile.min.css" />
-	<link href="style.css" type="text/css" rel="stylesheet">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="apple-mobile-web-app-capable" content="yes">
-	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-	<meta name="mobile-web-app-capable" content="yes">
+	<link href="style.css" type="text/css" rel="stylesheet">-->
+	{include="basicHeaders"}
 
 </head>
 
 <body>
 
-<div data-role="page" id="page">
+<div data-role="page" id="page" class="container">
 	
 	<h1>{$title}</h1>
 	<p>{$_welcome_message}</p>
@@ -49,6 +46,7 @@
 	{"former_arrivals"|setTplMessage}
 	{include="arrivalList"}
 	</div>
+	<hr>
 	<div>
 		<span>at <a href="https://github.com/elektrowolle/whosthere">Github</a></span>
 	</div>
@@ -59,14 +57,12 @@
 <script type="text/javascript">
 
 	var user_position = "{$default_position}";
-	var last_Update   = "{$initial_time}";
+	var server_time   = "{$initial_time}";
 	var api_adrress   = "{$api_address}";
 
-{if="isKioskMode()"}
-	var ipShown = false;
-{/if}
 
-{if="locationIsNeeded()"}
+{if="$locationIsNeeded"}
+function getLocation () {
 	if(navigator.geolocation){
 		navigator.geolocation.getCurrentPosition(successCallback,errorCallback,{timeout:10000});
 
@@ -75,45 +71,92 @@
 				position.coords.latitude 
 				+ "," 
 				+ position.coords.longitude ;
+
+			if($("#userPositionInput").length == 0)
+				$("#announceForm").append("<input id=\"userPositionInput\" name=\"location\" type=\"hidden\" value=\"" + user_position + "\">");
+			else
+				$("#userPositionInput").attr("value", user_position);
 		}
 
 		function errorCallback (events) {
+
 		}
 	}
+}
+
+
 {/if}
 
 	var posting;
+
+	$(document).ready(function(event){
+
+
+		getLocation();
+
+		if ((typeof localStorage.arrival_id) != "undefined") {
+			if(gup("arrived") == "true"){
+				var updateFormArgs = {"id":localStorage.arrival_id, "arrived": true};
+				apiRequest("arrivals", "updateArrival", "html", updateFormArgs)
+							.done(function (form) {
+
+					$("#announceForm").html(form);
+				});
+			}
+
+			var arrivalArgs = {"id":localStorage.arrival_id};
+			console.debug("storaged id");
+
+			apiRequest("arrivals", "getArrival", "json", arrivalArgs).done(function (results) {
+				console.debug("results");
+				console.debug(results);
+				saveInLocalStorage(results.localStorage);
+
+				if (localStorage.arrived == "1") {
+					var updateFormArgs = {"id":localStorage.arrival_id};
+					apiRequest("arrivals", "getArrivalMessage", "html", updateFormArgs)
+							.done(function (form) {
+
+						$("#announceForm").html(form);
+					});
+				}else if(localStorage.lastChecked_in > results.today){
+					if(localStorage.status) {
+
+						$("#announceForm").html("{$_arrivalGreeting}");
+
+					} else {
+						var updateFormArgs = {"id":localStorage.arrival_id};
+
+						apiRequest("arrivals", "getUpdateForm", "html", updateFormArgs)
+								.done(function (form) {
+
+							$("#announceForm").html(form);
+						});
+					}
+				}
+			});
+		}
+	});
+
 	function update () {
 		console.debug("Start update");
 		
-		
 		getNewArrivals();
 		getFormerArrivals();
-		
-		{if="isKioskMode()"}
-		$.getJSON(api_adrress + "?get=kiosk&args=showIP&output=json", function(data){
-			ipShown = displayIP(data.enabled == "true", ipShown);
-			console.debug("Kiosk Infos updated");
-		});
-		{/if}
 
 		console.debug("Display updated");
 	}
 
-	function apiRequest (api, request, args, successF) {
-		var requestAddress = api_adrress 
-			+ "?requestedApi=" + api
-			+ (request == "" ? "" : "&request=" + request)
-			+ (args    == "" ? "" : "&args="    + args);
+	$("#announceForm").submit(function (event) {
+		event.preventDefault();
+		var $form     = $( this );
 		
-		console.debug("Ask: " + requestAddress);
-		
-		$.ajax(requestAddress).done(function(data){successF(data)});
-	}
+		localStorage["name"] = $form.find("[name=name]").val();
+	});
 
 	function getNewArrivals () {
 		var $todaysList = $("#todays_arrivals_list");
-		apiRequest("arrivals", "show", '', function(data) {
+		apiRequest("arrivals", "show", "html", "").done(function(data) {
 		    $todaysList.html(data);
 		    console.debug("Got new arrivals");
 		});
@@ -123,66 +166,11 @@
 		var $formerList = $("#former_arrivals_list");
 		var args        = JSON.stringify({"filter": "former"});
 		
-		apiRequest("arrivals", "show", args, function(data) {
+		apiRequest("arrivals", "show", "html", args).done(function(data) {
 		    $formerList.html(data);
 		    console.debug("Got former arrivals");
 		 });
 	}
-
-	////// Announcement
-	
-	var $nameFied = $( "#announceForm" ).find( "input[name='name']" );
-	var nameFiedDefault = "{$_name_request}";
-
-	$nameFied.focusin(function( event ) {
-		if ($nameFied.val() == nameFiedDefault) {
-			$nameFied.val("");
-		}
-	});
-
-	$nameFied.focusout(function( event ) {
-		if ($nameFied.val() == "") {
-			$nameFied.val(nameFiedDefault);
-		}
-	});
-
-	$( "#announceForm" ).submit(function( event ) {
-	 	console.debug("Transmit Name");
-		  // Stop form from submitting normally
-		event.preventDefault();
-		 
-		  // Get some values from elements on the page:
-		var $form = $( this );
-		var url   = $form.attr( "action" );
-	    var args  = {};
-
-	    args["showArrivalForm"] = "true";
-
-
-
-	    $form.find("input").each(function(index, element){
-	    	args[element.name] = element.value;
-	    });
-
-	    if(args["name"] == nameFiedDefault || args["name"] == "") {
-	    	return;
-	    };
-
-	    console.debug("announce: " + JSON.stringify(args));
-	 
-	    // Send the data using post
-		posting = $.post( url, {"args": JSON.stringify(args)} );
-		 
-		// Put the results in a div
-		posting.done(function( data ) {
-		    $form.html(data);
-		    update();
-		});
-
-		posting.fail(function( data ) {
-			console.debug("fail:" + data);
-		});
-	});	
 
 	function gup( name ){
 		name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
@@ -197,7 +185,7 @@
 			return results[1];
 	}
 
-
+	initForms();
 	setInterval(update, 5000);
 </script>
 </body>

@@ -9,7 +9,10 @@
 		'_arrivals_status' => 'Status',
 		'_check_in'        => 'Check in',
 		'_name_request'    => 'Who are you?',
-		"_welcome"         => 'Hi, %%name%%!'
+		'_welcome'         => 'Hi, %%name%%!',
+		'_updateLocation'  => 'Update you location',
+		'_arrivalGreeting' => 'Great! Don\'t Forget to checkin tomorrow again!',
+		'_not_yet_arrived' => 'See you in %%minutesTillArrival%% minutes!'
 		);
 
 	$config['lang']['de']['_welcome'] = 'Willkommen';

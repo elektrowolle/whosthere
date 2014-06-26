@@ -33,29 +33,11 @@ class KioskView extends ViewModule {
 
 		$former_arrivals = queryToArray($formerArrivalsQuery);
 
-		$this->setContent('rotation', KioskView::rotationToInt($config['rotation']));
+		$this->setContent('rotation', rotationToInt($config['rotation']));
 		$this->setContent('width', $config['width']);
 
 		$this->setContent('today_arrivals' , $today_arrivals);
 		$this->setContent('former_arrivals', $former_arrivals);
-
-		//$tpl->draw('start');
-	}
-
-	static public function rotationToInt($value=''){
-		switch (strtoupper($value)) {
-			case 'CW':
-				return '90'; 
-				break;
-
-			case 'CCW':
-				return '270'; 
-				break;
-			
-			default:
-				return '0';
-				break;
-		}
 	}
 }
 

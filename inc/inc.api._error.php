@@ -11,9 +11,14 @@
   			parent::__construct($args);
 		}
 
-		public function defaultApi($value='') {
-			$this->content['error'] = $value;
+		public function defaultApi($value) {
+
+			$this->content['error'] = method_exists($value, 'getMessage')
+				? call_user_method('getMessage', $value)
+				: print_r($value, true);
+
 		}
+
 		public function getJs(){}
 	}
 

@@ -69,4 +69,20 @@
 	    return $data->id;
 	}
 
+	function rotationToInt($value=''){
+		switch (strtoupper($value)) {
+			case 'CW':
+				return '90'; 
+				break;
+
+			case 'CCW':
+				return '270'; 
+				break;
+			
+			default:
+				return '0';
+				break;
+		}
+	}
+
 ?>

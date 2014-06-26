@@ -1,7 +1,7 @@
 <?php
 include_once 'conf.php';
 
-include_once 'inc/inc.api.php';
+include_once 'inc/inc.api.class.php';
 
 //Arrivals
 $args         = '';
@@ -10,7 +10,6 @@ $requestedApi = '';
 $request      = '';
 $content      = '';
 $api_success  = false;
-
 
 if (!empty($_GET['requestedApi'])) 
 	$requestedApi = $_GET['requestedApi'];
@@ -37,12 +36,16 @@ if(!empty($_POST['args']))
 if(!empty($_POST['request']))
 	$request = $_POST['request'];
 
+
 $api = new API($tpl, $output);
 
 
+if($config['debug'])print_r($_GET);
 
 
-
-$api->askApi($requestedApi, $request, $args);
-
+try{
+	$api->askApi($requestedApi, $request, $args);
+}catch(Excetion $e){
+	$api->get('error', print_r($e, true)); 
+}
 ?>

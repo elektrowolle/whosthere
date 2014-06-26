@@ -6,13 +6,17 @@
 class View {
 
 	static $views = array();
+	static $viewInUse;
 	var $view;
-
 	function __construct($viewName ='', $args = '', $update = false) {
-		$this->view = View::loadView($viewName == '' ? 'default': $viewName, $args, $update);
+		$usedName = ($viewName == '' ? 'default': $viewName);
+		$this->view = View::loadView($usedName, $args, $update);
+
+
 	}
 
 	public function draw($tpl) {
+		View::$viewInUse = $this;
 		$this->view->draw($tpl);
 	}
 
@@ -23,7 +27,14 @@ class View {
 	}
 
 	static public function loadView($view, $args, $update) {
-		return View::$views[$view]['class']->newInstance($args, $update, View::$views[$view]['template']);
+		$foundView = View::$views[$view]['class']->newInstance($args, $update, View::$views[$view]['template']);
+
+		$methods = View::$views[$view]['class']->getMethods();
+		foreach ($methods as $key => $value) {
+			$foundView->addContent($value->getClosure($foundView));
+		}
+
+		return $foundView;
 	}
 }
 
