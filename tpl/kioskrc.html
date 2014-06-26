@@ -10,6 +10,9 @@
 
 
 <form id="controlForm" role="form" action="{$api_address}/kiosk/remoteControl.json" method="post" class="apiForm">
+	<input name="api" type="hidden" class="form-control" value="kiosk">
+	<input name="request" type="hidden" class="form-control" value="remoteControl">
+	<input name="output" type="hidden" class="form-control" value="json">
   <div class="form-group">
     <input type="text" class="form-control" name="name" id="kioskNameInput" placeholder="Kiosk name">
   </div>
