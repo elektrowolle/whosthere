@@ -31,15 +31,16 @@ $config['googleApiKey'] = '';
 
 $config['debug'] = false;
 
-$config['default_position']        = "53.074435,8.808602";
+$config['default_position']        = '53.074435,8.808602';
 $config['default_duration']        = 52380;
 $config['destination']             = '8+Am+Speicher+XI+Bremen';
-$config['geoDifferenceForArrival'] = .1;
+$config['destination_coordinates'] = '53.096725,8.7697675';
+$config['geoDifferenceForArrival'] = .002;
 
 $config['webAddress']        = 'http://whosthere.hausnr11.de/';
 $config['path']              = '/whosthere/';
 $config['apiAddressRestful'] = $config['path'] . 'api/v0';
-$config['apiAddress']        = /*$config['apiAddressRestful']; //*/$config['path'] . 'api.php';
+$config['apiAddress']        = $config['apiAddressRestful']; //*/$config['path'] . 'api.php';
 
 
 $config['appCheckinUrl'] = $config['webAddress'] . $config['path'] . '?installApp=true&arrived=true';

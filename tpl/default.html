@@ -73,16 +73,20 @@ function getLocation () {
 				+ "," 
 				+ position.coords.longitude ;
 
-			if($("#userPositionInput").length == 0)
-				$("#announceForm").append("<input id=\"userPositionInput\" name=\"location\" type=\"hidden\" value=\"" + user_position + "\">");
-			else
-				$("#userPositionInput").attr("value", user_position);
+			setUserPositionUnputField();
 		}
 
 		function errorCallback (events) {
-
+			setUserPositionUnputField();
 		}
 	}
+}
+
+function setUserPositionUnputField () {
+	if($("#userPositionInput").length == 0)
+		$("#announceForm").append("<input id=\"userPositionInput\" name=\"location\" type=\"hidden\" value=\"" + user_position + "\">");
+	else
+		$("#userPositionInput").attr("value", user_position);
 }
 
 
@@ -103,39 +107,40 @@ function getLocation () {
 
 					$("#announceForm").html(form);
 				});
-			}
+			}else{
 
-			var arrivalArgs = {"id":localStorage.arrival_id};
-			console.debug("storaged id");
+				var arrivalArgs = {"id":localStorage.arrival_id};
+				console.debug("storaged id");
+				
+				
+				
+					apiRequest("arrivals", "getArrival", "json", arrivalArgs).done(function (results) {
+						console.debug("results");
+						console.debug(results);
+						saveInLocalStorage(results.localStorage);
 
-			apiRequest("arrivals", "getArrival", "json", arrivalArgs).done(function (results) {
-				console.debug("results");
-				console.debug(results);
-				saveInLocalStorage(results.localStorage);
+					if(localStorage.lastChecked_in > results.today){
+						if (localStorage.arrived == "1") {
+							var updateFormArgs = {"id":localStorage.arrival_id};
+							apiRequest("arrivals", "getArrivalMessage", "html", updateFormArgs)
+									.done(function (form) {
 
-				if (localStorage.arrived == "1") {
-					var updateFormArgs = {"id":localStorage.arrival_id};
-					apiRequest("arrivals", "getArrivalMessage", "html", updateFormArgs)
-							.done(function (form) {
+								$("#announceForm").html(form);
+							});
+						}else{
+							var updateFormArgs = {"id":localStorage.arrival_id}	;
 
-						$("#announceForm").html(form);
-					});
-				}else if(localStorage.lastChecked_in > results.today){
-					if(localStorage.status) {
+							apiRequest("arrivals", "getUpdateForm", "html", updateFormArgs)
+									.done(function (form) {
 
-						$("#announceForm").html("{$_arrivalGreeting}");
-
-					} else {
-						var updateFormArgs = {"id":localStorage.arrival_id};
-
-						apiRequest("arrivals", "getUpdateForm", "html", updateFormArgs)
-								.done(function (form) {
-
-							$("#announceForm").html(form);
-						});
+								$("#announceForm").html(form);
+							});
+						}
+					}else{ //localStorage.lastChecked_in < results.today
+						$("#announceForm input[name=name]").val(localStorage.name);
 					}
-				}
-			});
+				});
+			}
 		}
 	});
 

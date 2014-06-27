@@ -87,11 +87,14 @@ class arrivalsApi extends apiModule	{
 		
 		if(!$arrived){
 			$originLocation      = explode(",", $origin);
-			$destinationLocation = explode(",", $GLOBALS['config']['default_position']);
+			$destinationLocation = explode(",", $GLOBALS['config']['destination_coordinates']);
 			$positionDifference  = 
 				abs(floatval($originLocation[0]) - floatval($destinationLocation[0]))
 				+ abs(floatval($originLocation[1]) - floatval($destinationLocation[1]));
 
+			if($GLOBALS['config']['debug']) print_r($originLocation);
+			if($GLOBALS['config']['debug']) print_r($destinationLocation);
+			if($GLOBALS['config']['debug']) print_r($positionDifference);
 			$arrived = $positionDifference < $GLOBALS['config']['geoDifferenceForArrival'];
 		}
 
@@ -113,7 +116,7 @@ class arrivalsApi extends apiModule	{
 
 		
 
-		if ($arrived) {
+		if ($arrived == "1") {
 			$this->getArrivalMessage($id);
 		}else{
 			$this->getUpdateForm($id);
