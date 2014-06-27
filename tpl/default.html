@@ -99,7 +99,7 @@ function setUserPositionUnputField () {
 
 		getLocation();
 
-		if ((typeof localStorage.arrival_id) != "undefined") {
+		if ((typeof localStorage.arrival_id) != "undefined" && localStorage.arrival_id != "null") {
 			if(gup("arrived") == "true"){
 				var updateFormArgs = {"id":localStorage.arrival_id, "arrived": true};
 				apiRequest("arrivals", "updateArrival", "html", updateFormArgs)
